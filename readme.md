@@ -335,3 +335,7 @@ pi@airmar200wx: ~ $ sudo nano /etc/samba/smb.conf
 
 
 
+
+
+
+
