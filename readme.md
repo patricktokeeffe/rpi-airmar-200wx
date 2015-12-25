@@ -1,7 +1,44 @@
 Raspbian Weather Station
 ========================
 
+Raspberry Pi-based front end for an Airmar 200WX.
 
+### Bill of Materials
+
+|  # | Description                                            | $ (est) |
+|-------------------------------------------------------------|---------|
+|  1 | [Airmar 200WX][bom-200]                                |  [1300] |
+|  2 | [Aimar 0183 NMEA cable][bom-cbl]                       |    [65] |
+|  3 | [RS485-to-RS232 serial converter][bom-232]             |     30* |
+|  4 | [Barrel jack, 5.5mm X 2.1mm, DC power][bom-jck]        |      -  |
+|  5 | [Power supply, 12Vdc @ 2A][bom-12v]                    |      6  |
+|  6 | [Buck converter to 5V][bom-5dc]                        |     12  |
+|  7 | [Nulsom male RS232-to-TTL serial converter][bom-ttl]   |      9  |
+|  8 | [Raspberry Pi Model B+][bom-rpi]                       |     32  |
+|  9 | [microSD card, 4GB][bom-usd]                           |      5  |
+| 10 | [Panel mount Ethernet extension][bom-pme]              |      3  |
+| 11 | [Momentary button][bom-btn]                            |      1  |
+| 12 | [Enclosure][bom-enc]                                   |      7  |
+|  - | Female-female jumper wires                             |      -  |
+|    | *Total (excluding 200WX & cable)*                      |    105  |
+
+Substitutions may apply. Links are for convenience only.
+
+*(\*) We had this item on-hand but you can find an inexpensive, probably
+comparable, device for ~$30.*
+
+  [bom-200]: https://duckduckgo.com/?q=airmar+200wx
+  [bom-cbl]: https://duckduckgo.com/?q=airmar+nmea+0183+cable
+  [bom-232]: http://www.digikey.com/product-detail/en/SCP311T-DFTB3/1165-1055-ND/3045941
+  [bom-jck]: https://www.amazon.com/Generic-5-5mmx2-1mm-Supply-Adapter-Socket/dp/B00EQ1UWX4
+  [bom-12v]: https://www.amazon.com/RockBirds-12V-Switching-Supply-Adapter/dp/B00VM292AO
+  [bom-5dc]: https://www.amazon.com/Waterproof-Converter-Voltage-Module-Interface/dp/B00CGQME5U
+  [bom-ttl]: https://www.amazon.com/Ultra-Compact-RS232-Converter-Male/dp/B00OPU2QJ4
+  [bom-rpi]: https://www.amazon.com/Raspberry-Pi-Model-512MB-Computer/dp/B00LPESRUK
+  [bom-usd]: https://www.amazon.com/Sandisk-MicroSDHC-Memory-Card-Adapter/dp/B000SMVQK8
+  [bom-pme]: https://www.amazon.com/JoyliveStore-Female-Ethernet-Network-Extension/dp/B00WLYRPI8
+  [bom-btn]: https://www.amazon.com/uxcell-Momentary-Pushbutton-Switch-DS-425/dp/B00HG7GWRK
+  [bom-enc]: https://www.amazon.com/Hammond-1591ESBK-ABS-Project-Black/dp/B0002BSRIO
 
 ### Setup
 
