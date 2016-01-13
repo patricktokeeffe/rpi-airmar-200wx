@@ -323,7 +323,11 @@ pi@airmar200wx: ~ $ sudo nano /etc/samba/smb.conf
 
 
 
+### Reference
 
+* [Airmar PB200 Weather Station User Manual][ref-pb200]
+
+  [ref-pb200]: http://www.airmartechnology.com/uploads/installguide/PB200UserManual.pdf
 
 
 
