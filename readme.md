@@ -297,12 +297,29 @@ Reboot - works.
 
 #### RPi-Monitor Setup
 
-
-
-
 ***TODO***
 
+Edit `/etc/rpimonitor/data.conf` to include these templates:
+    `services.conf`
+    `dht11.conf`
 
+In `services.conf`, copy existing sections to add support for monitoring:
+    rpimonitor    8888
+    kplex         10110
+
+
+In `dht11.conf` adapt first dynamic block to read air temp from file:
+
+```
+dynamic.1.name=roof_temp
+dynamic.1.source=/dev/airmar200wx/air_temp
+dynamic.1.regexp=(\S+)
+dynamic.1.postprocess=$1
+dynamic.1.rrd=GAUGE
+```
+
+Update references to `data.air_temp`. Comment out humidity stuff.
+Restart rpimonitor service.
 
 
 #### Samba (SMB) Setup
