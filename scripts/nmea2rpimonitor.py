@@ -3,13 +3,12 @@
 # echo local NMEA data in csv
 
 import socket
-import pynmea2
 import os
 
 # listen to NMEA data 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('',10110))
-r = pynmea2.NMEAStreamReader(s.makefile())
+f = s.makefile()
 
 devname = "/dev/airmar200wx"
 try:
@@ -19,9 +18,10 @@ except OSError:
         raise
 
 while True:
-    for msg in r.next():
-#        print msg; continue
-        if isinstance(msg, pynmea2.types.MDA):
+    msg = f.readline()
+#    print msg,; continue
+    if msg.startswith("$WIMDA"):
+        if 1:
             print msg
             print "Barometric pressure (mbar):", msg.b_presure_bar*1000
             print "Air temperature (*C):", msg.air_temp
