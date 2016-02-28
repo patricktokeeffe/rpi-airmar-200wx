@@ -322,6 +322,19 @@ Update references to `data.air_temp`. Comment out humidity stuff.
 Restart rpimonitor service.
 
 
+#### Log weather data to file
+
+Add the weather logging script to the root user's cron table:
+
+```
+pi@airmar200wx:~ sudo crontab -e
+```
+```
+...
+@reboot /home/pi/weather-logger.py
+```
+
+
 #### Samba (SMB) Setup
 
 Install samba for sharing data:
