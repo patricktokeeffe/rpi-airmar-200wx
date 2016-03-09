@@ -1,0 +1,14 @@
+[Unit]
+Description=Save Airmar 200wx NMEA data to file
+# https://wiki.archlinux.org/index.php/Systemd#Handling_dependencies
+Requires=kplex.service
+After=kplex.service
+
+[Service]
+Type=simple
+RemainAfterExit=No
+ExecStart=/home/pi/nmea2file.py
+
+[Install]
+WantedBy=multi-user.target
+

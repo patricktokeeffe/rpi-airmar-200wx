@@ -322,17 +322,19 @@ Update references to `data.air_temp`. Comment out humidity stuff.
 Restart rpimonitor service.
 
 
-#### Log weather data to file
+#### Log data to file
 
-Add the weather logging script to the root user's cron table:
+As of Jessie, Raspbian uses `systemd` for service management. This is better
+than using cron because we can control the process while running and we can
+specify dependencies. Copy the service files into `/etc/systemd/system/` then
+enable them (which starts them at boot).
 
 ```
-pi@airmar200wx:~ sudo crontab -e
-```
-```
+pi@airmar200wx:~ sudo cp raspbian-200wx-daq/etc/* /etc/systemd/service
+pi@airmar200wx:~ sudo systemctl enable weather-logger
 ...
-@reboot /home/pi/weather-logger.py
-@reboot /home/pi/nmea2file.py
+pi@airmar200wx:~ sudo systemctl enable nmea2file
+...
 ```
 
 
