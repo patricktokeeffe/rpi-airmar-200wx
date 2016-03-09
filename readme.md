@@ -332,6 +332,7 @@ pi@airmar200wx:~ sudo crontab -e
 ```
 ...
 @reboot /home/pi/weather-logger.py
+@reboot /home/pi/nmea2file.py
 ```
 
 
