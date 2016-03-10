@@ -15,6 +15,7 @@ nmea_port = kplex.makefile()
 
 logfile = TimedRotatingFileHandler('/var/log/airmar200wx/tsv/weather',
         when='midnight', interval=1, backupCount=365)
+logfile.suffix = '%Y-%m-%d.tsv'
 logfile.setFormatter(logging.Formatter('%(asctime)s\t%(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
 
 logger = logging.getLogger('airmar200wx.nmea.wimda')
