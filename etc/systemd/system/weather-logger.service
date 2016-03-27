@@ -7,8 +7,7 @@ After=kplex.service
 [Service]
 Type=simple
 RemainAfterExit=No
-ExecStart=/home/pi/weather-logger.py
+ExecStart=/usr/sbin/weather-logger
 
 [Install]
 WantedBy=multi-user.target
-

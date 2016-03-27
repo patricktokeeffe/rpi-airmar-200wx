@@ -7,7 +7,7 @@ After=kplex.service
 [Service]
 Type=simple
 RemainAfterExit=No
-ExecStart=/home/pi/nmea2file.py
+ExecStart=/usr/sbin/nmea2file
 
 [Install]
 WantedBy=multi-user.target

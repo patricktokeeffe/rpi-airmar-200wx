@@ -1,0 +1,13 @@
+[Unit]
+Description=kplex (NMEA multiplexer)
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=kplex
+Group=kplex
+ExecStart=/usr/bin/kplex
+
+[Install]
+WantedBy=multi-user.target
+
