@@ -20,7 +20,7 @@ Raspberry Pi-based front end for an Airmar 200WX.
 | 11 | [Momentary button][bom-btn]                            |      1  |
 | 12 | [Enclosure][bom-enc]                                   |      7  |
 |  - | Female-female jumper wires                             |      -  |
-|    | *Total (excluding 200WX & cable)*                      |    105  |
+|    | *Total (excluding 200WX & cable)*                      |    150  |
 
 Substitutions may apply. Links are provided for completeness; we're not here
 to endorse products or vendors.
@@ -301,14 +301,12 @@ Reboot, then run `systemctl` to verify *kplex* is running.
 
 > The real meat-and-potatoes of this repository is found here.
 
-If you haven't yet, clone this repository and step inside it.
-
-> **FIXME** update the repository address below using final repo name!
-> To shortcut the future change, we're specifying the destination folder.
+If you haven't yet, clone this repository and step inside it. Be
+sure to use the correct branch (not master).
 
 ```
-$ git clone https://bitbucket.org/patricktokeeffe/rpi-airmar-200wx rpi-airmar200wx
-Cloning into 'rpi-airmar200wx'...
+$ git clone https://bitbucket.org/patricktokeeffe/rpi-airmar-200wx
+Cloning into 'rpi-airmar-200wx'...
 Username for 'https://bitbucket.org': patricktokeeffe
 Password for 'https://patricktokeeffe@bitbucket.org':
 remote: Counting objects: 46, done.
@@ -316,7 +314,10 @@ remote: Compressing objects: 100% (41/41), done.
 remote: Total 46 (delta 18), reused 0 (delta 0)
 Unpacking objects: 100% (46/46), done.
 Checking connectivity... done.
-pi@airmar200wx:~ $
+pi@airmar200wx:~ $ cd rpi-airmar-200wx
+pi@airmar200wx:~/rpi-airmar200wx $ git checkout develop
+Branch develop set up to track remote branch develop from origin.
+Switched to a new branch 'develop'
 ```
 
 To "install" the logging scripts, copy them into the `/usr/sbin` directory
@@ -325,17 +326,17 @@ with new names (sans file extension), then mark the copied scripts as
 executable.
 
 ```
-pi@airmar200wx:~/rpi-airmar200wx $ sudo cp scripts/nmea2file.py /usr/sbin/nmea2file
-pi@airmar200wx:~/rpi-airmar200wx $ sudo cp scripts/weather-logger.py /usr/sbin/weather-logger
-pi@airmar200wx:~/rpi-airmar200wx $ sudo chmod +x /usr/sbin/nmea2file.py
-pi@airmar200wx:~/rpi-airmar200wx $ sudo chmod +x /usr/sbin/weather-logger.py
+pi@airmar200wx:~/rpi-airmar-200wx $ sudo cp scripts/nmea2file.py /usr/sbin/nmea2file
+pi@airmar200wx:~/rpi-airmar-200wx $ sudo cp scripts/weather-logger.py /usr/sbin/weather-logger
+pi@airmar200wx:~/rpi-airmar200wx $ sudo chmod +x /usr/sbin/nmea2file
+pi@airmar200wx:~/rpi-airmar200wx $ sudo chmod +x /usr/sbin/weather-logger
 ```
 
-Next, create the output directories for the logging scripts (**FIXME**):
+Next, create the output directories for the logging scripts:
 
 ```
-pi@airmar200wx:~ sudo mkdir -p /var/log/airmar200wx/nmea
-pi@airmar200wx:~ sudo mkdir -p /var/log/airmar200wx/tsv
+pi@airmar200wx:~ sudo mkdir -p /var/log/airmar200wx/raw
+pi@airmar200wx:~ sudo mkdir -p /var/log/airmar200wx/1hz
 ```
 
 Finally, copy the provided service configuration files to `/etc/systemd/system`
