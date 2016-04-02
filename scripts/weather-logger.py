@@ -13,7 +13,7 @@ kplex = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 kplex.connect(('',10110))
 nmea_port = kplex.makefile()
 
-logfile = TimedRotatingFileHandler('/var/log/airmar200wx/tsv/weather',
+logfile = TimedRotatingFileHandler('/var/log/airmar200wx/1hz/weather',
         when='midnight', interval=1, backupCount=365)
 logfile.suffix = '%Y-%m-%d.tsv'
 logfile.setFormatter(logging.Formatter('%(asctime)s\t%(message)s', datefmt='%Y-%m-%d %H:%M:%S'))

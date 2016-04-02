@@ -17,7 +17,7 @@ nmea_port = kplex.makefile()
 
 print "connected to kplex"
 
-logfile = TimedRotatingFileHandler('/var/log/airmar200wx/nmea/nmea',
+logfile = TimedRotatingFileHandler('/var/log/airmar200wx/raw/nmea',
         when='midnight', interval=1, backupCount=365)
 logfile.setFormatter(logging.Formatter('%(message)s'))
 
