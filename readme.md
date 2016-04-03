@@ -388,6 +388,20 @@ Install support for a physical off button from this repository:
 in the near future.*
 
 
+#### Telemetry & reporting
+
+Send updates to local ScadaBR installation using cron to run
+`scripts/update-scadabr.py` every minute.
+
+```
+$ sudo crontab -e
+```
+```
+...
+* * * * * python /path/to/the/script
+```
+
+
 #### RPi-Monitor Setup
 
 ***TODO***
