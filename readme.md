@@ -414,6 +414,52 @@ Update references to `data.air_temp`. Comment out humidity stuff.
 Restart rpimonitor service.
 
 
+### Maintenance
+
+#### Hardware
+
+The weather station unit requires minimal maintenance; refer to the
+specific user manual for details. 
+
+Likewise, the data acquisition system (R. Pi & accessories) requires
+minimal maintenance: 
+
+* protect from humidity with fresh desiccant packets
+* protect from EMI by ensuring solid electrical grounding
+* expel visible dust with commercial electronics duster (canned air)
+
+#### Software Updates
+
+##### System
+
+Use `apt` to keep the operating system and installed packages up-to-date.
+We use `dist-upgrade` so any changing dependencies are resolved, but
+`upgrade` works fine too.
+
+```
+$ sudo apt-get update
+...lots of output...
+$ sudo apt-get dist-upgrade
+...lots of output...
+```
+
+##### *kplex*
+
+Since *kplex* was installed from source, it cannot be updated by `apt`.
+Instead, fetch the latest source, recompile and reinstall. Be sure to
+masquerade as the `kplex` user to retain proper file permissions.
+
+```
+~ $ cd /home/kplex
+/home/kplex $ sudo -u kplex git pull origin master
+...
+/home/kplex $ sudo -u kplex make
+...
+/home/kplex $ sudo make install
+...
+```
+
+
 
 ### Reference
 
