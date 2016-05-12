@@ -376,6 +376,95 @@ service fails to start, you can get more information by calling
    read only = yes
 ```
 
+#### Update clock using GPS
+
+Feed specific GPS sentences to the local NTP daemon so the clock
+is updated without a network connection.
+
+Start by adding a psuedo-terminal which only receives the Recommended
+Minimum Coordinates sentence (GPRMC). 
+
+```
+$ sudo nano /etc/kplex.conf
+```
+```
+...
+
+[pty]
+mode=master
+filename=/////////////////
+direction=out
+ofilter=+GPRMC:-all
+
+```
+
+Now create a FIFO for kplex to connect to...
+
+```
+$ sudo mkfifo /dev/gps0
+```
+
+And tell NTP to use that FIFO as a GPS source...
+
+```
+$ sudo nano /etc/ntp.conf
+```
+```
+...
+server 127.127.20.0 mode 1 prefer
+...
+```
+
+`mode 1` indicates to only process `$GPRMC` sentences, and to expect
+the default baud rate of 4800 bps. The `prefer` directive gives some
+extra weight to the local GPS.
+
+scenario 1 (ntp 4.2.6p5)
+
+- create FIFO, assign ownership to `kplex`
+- kplex writes to file `/dev/gps0`
+- NTP uses `server 127.127.20.0`
+
+-> results after restarting NTP (systemctl status)
+
+    ...
+    peers refreshed
+    Listening on routing socket on fd #23 for interface updates
+    refclock_setup fd 5 tcgetattr: Inappropriate ioctl for device
+
+Device not listed in output of `ntpq -p`
+
+--> tried updating to v4.2.8p7... still no device listed by `ntpq -p`
+    and the error changed from `fd 5 tcgetattr` to `fd 4 tcgetattr`
+
+
+scenario 2 (ntp 4.2.6p5)
+
+- kplex writes to pty `/home/kplex/gps0`
+- symlinked `/home/kplex/gps0` -> `/dev/gps0`
+- NTP uses `server 127.127.20.0`
+
+-> results after restarting NTP:
+
+    ...
+    peers refreshed
+    Listening on routing socket on fd #23 for interface updates
+    refclock_setup fd 5 TIOCMGET: Invalid argument
+    GPS_NMEA(0) serial /dev/gps0 open at 4800 bps
+
+and from `ntpq -p`: 
+
+    remote           refid    st t when poll reach  delay   offset  jitter
+    GPS_NMEA(0)      .GPS.     0 l   33   64    0   0.000    0.000   0.000
+    ...
+
+
+--> tried updating to 4.2.8p7... mixed results: still have "TIOCMGET"
+    error but with `fd 4` instead of `fd 5`, but DO now see entry in
+    `ntpq -p` with non-zero offset/jitter values... BUT GPS was marked as
+    false ticker (x)    ........... waiting, waiting, waiting..... OK,
+    after a few minutes local GPS gets selected (*)!
+
 
 #### Off button support
 
