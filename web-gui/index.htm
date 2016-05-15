@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<head>
+   <title>Weather Station</title>
+    <link href="/static/styles.css" rel="stylesheet" type="text/css" />
+   <script type="text/javascript" src="/static/jquery-2.2.3.min.js"></script>
+   <script type="text/javascript">
+      jQuery(document).ready(function () {
+         if ("WebSocket" in window){
+            var ws = new WebSocket("ws://"+window.location.host+"/ws");
+            var received = [];
+            ws.onmessage = function(evt) {
+                received.push(evt.data);
+                d = JSON.parse(evt.data);
+                t = new Date(d.timestamp*1000)
+                jQuery("#ts").html(t)
+                jQuery("#tVal").html(d.Tair+"&deg;C");
+                jQuery("#rhVal").html(d.RH+"%");
+                jQuery("#dpVal").html(d.dewpoint+"&deg;C");
+                jQuery("#pVal").html(d.Pbaro+" mb");
+                jQuery("#wsVal").html(d.WS+" m/s");
+                jQuery("#wdVal").html(d.WD+"&deg; TN");
+            }
+            ws.onopen = function() {
+               messagecount = 0;
+            }
+            ws.onclose = function() {
+               messagecount = 0;
+            }
+         }
+         else {
+            alert("WebSocket NOT support by your Browser!");
+         }
+      });
+   </script>
+</head>
+<html>
+<body>
+<div id="wrapper">
+    <h1>Weather Station</h1>
+    <div class="container">
+        <div class="background"></div>
+        <div class="table" id="summary">
+            <div class="row">
+                <div class="label">Timestamp</div>
+                <div class="value" id="ts"><emph>waiting for data</emph></div>
+            </div>
+            <div class="row">
+                <div class="label">Air temperature</div>
+                <div class="value" id="tVal"><emph>waiting for data</emph></div>
+            </div>
+            <div class="row">
+                <div class="label">Relative humidity</div>
+                <div class="value" id="rhVal"><emph>waiting for data</emph></div>
+            </div>
+            <div class="row">
+                <div class="label">Dew point</div>
+                <div class="value" id="dpVal"><emph>waiting for data</emph></div>
+            </div>
+            <div class="row">
+                <div class="label">Barometric pressure</div>
+                <div class="value" id="pVal"><emph>waiting for data</emph></div>
+            </div>
+            <div class="row">
+                <div class="label">Wind speed</div>
+                <div class="value" id="wsVal"><emph>waiting for data</emph></div>
+            </div>
+            <div class="row">
+                <div class="label">Wind direction</div>
+                <div class="value" id="wdVal"><emph>waiting for data</emph></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+

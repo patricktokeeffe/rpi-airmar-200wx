@@ -1,0 +1,19 @@
+
+h1 {
+  font-family: Tahoma, Helvetica, sans-serif;
+  text-align: center;
+}
+
+#summary{
+  border: 1px solid black;
+  margin: auto;
+}
+
+.table { display: table; }
+.row { display: table-row; }
+
+.label, .value { 
+  display: table-cell;
+  padding: 5px 10px 5px 10px;
+}
+

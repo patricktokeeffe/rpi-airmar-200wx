@@ -1,1 +1,4 @@
 
+# ignore vendor scripts
+web-gui/static/*.js
+
