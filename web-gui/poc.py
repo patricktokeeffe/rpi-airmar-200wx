@@ -24,7 +24,8 @@ import threading
 import time
 
 import json
-import random ####
+import socket
+import os
 
 
 class IndexHandler(tornado.web.RequestHandler):
@@ -53,31 +54,42 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
             except:
                 print("Error sending message")
 
-import os
 static = os.getcwd()+"/static"
 
 app = tornado.web.Application([
     (r'/', IndexHandler),
-    (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static}),
+    (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': 
+                                    os.path.join(os.getcwd(), 'static')}),
     (r'/ws', WebSocketHandler)
     ])
 
 
-def injectdata():
+kplex = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+kplex.connect(('',10110))
+nmea_port = kplex.makefile()
+
+def post_new_data():
     while True:
-        data = {'timestamp': time.time(),
-                'Tair': random.randrange(13, 22),
-                'RH': random.randrange(65,85),
-                'Pbaro': random.randrange(1004, 1113),
-                'dewpoint': random.randrange(-4, 9),
-                'WS': random.randrange(0, 10),
-                'WD': random.randrange(0,359)
-                }
-        WebSocketHandler.send_updates(json.dumps(data))
-        time.sleep(1)
+        try:
+            msg = nmea_port.readline()
+            if msg.startswith('$WIMDA'):
+                (_,_,_,P,_,T,_,_,_,RH,_,DP,_,WD,_,_,_,_,_,WS,_)=msg.split(',')
+                P = str(1000*float(P)) # bar -> mbar
+                data = {'tstamp': time.time(), # time, unix epoch
+                        'T': T,    # air temp., *C
+                        'RH': RH,  # rel. humidity, %
+                        'P': P,    # air press., mb
+                        'DP': DP,  # dewpoint, *C
+                        'WS': WS,  # wind speed, m/s
+                        'WD': WD } # wind direction, *TN
+                WebSocketHandler.send_updates(json.dumps(data))
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
+            continue
 
+threading.Thread(target=post_new_data).start()
 
-threading.Thread(target=injectdata).start()
 srv = tornado.httpserver.HTTPServer(app)
 srv.listen(80)
 try:

@@ -1,12 +1,17 @@
 
-h1 {
+h1, h2, h3 {
   font-family: Tahoma, Helvetica, sans-serif;
   text-align: center;
 }
 
-#summary{
+#summary {
   border: 1px solid black;
   margin: auto;
+}
+
+#getdata{
+  margin: auto;
+  text-align: center;
 }
 
 .table { display: table; }

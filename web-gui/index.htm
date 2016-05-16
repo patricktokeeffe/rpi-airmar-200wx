@@ -11,12 +11,12 @@
             ws.onmessage = function(evt) {
                 received.push(evt.data);
                 d = JSON.parse(evt.data);
-                t = new Date(d.timestamp*1000)
+                t = new Date(d.tstamp*1000)
                 jQuery("#ts").html(t)
-                jQuery("#tVal").html(d.Tair+"&deg;C");
+                jQuery("#tVal").html(d.T+"&deg;C");
                 jQuery("#rhVal").html(d.RH+"%");
-                jQuery("#dpVal").html(d.dewpoint+"&deg;C");
-                jQuery("#pVal").html(d.Pbaro+" mb");
+                jQuery("#dpVal").html(d.DP+"&deg;C");
+                jQuery("#pVal").html(d.P+" mb");
                 jQuery("#wsVal").html(d.WS+" m/s");
                 jQuery("#wdVal").html(d.WD+"&deg; TN");
             }
@@ -68,6 +68,10 @@
                 <div class="label">Wind direction</div>
                 <div class="value" id="wdVal"><emph>waiting for data</emph></div>
             </div>
+        </div>
+        <div id="getdata">
+            <h2>Getting the Data</h3>
+            <div>Visit this address via SFTP or SMB!</div>
         </div>
     </div>
 </div>
