@@ -387,6 +387,126 @@ Install support for a physical off button from this repository:
 in the near future.*
 
 
+#### Graphical (Web) Interface
+
+**Work In Progress**
+
+- set cwd to subdirectory `web-gui`
+- make server executable `sudo chmod +x poc.py`
+- run server `sudo ./poc.py`
+- stop server using alternate terminal `ps -a`->`sudo kill xxxx`
+- visit `http://this.device.ip.address/` to get (fake) present values
+- TODO
+    - have RPi-Monitor `tail` weather data files
+    - add links to RPi-Monitor, IPython notebook (auth?) to index
+    - embed forecast.io frame to index
+    - add 'how to get data' instructions/links to index
+
+GUI over local wifi
+
+refs:
+
+- https://frillip.com/using-your-raspberry-pi-3-as-a-wifi-access-point-with-hostapd/
+- https://raspiugv.raudasoja.com/documentation/raspi/network/captiveportal
+- https://www.engetsu-consulting.com/raspberry-pi-raspbian-rogue-access-point-ap-landing-page-captive-portal
+- http://w1.fi/cgit/hostap/plain/hostapd/hostapd.conf
+
+procedure
+
+1. install: `sudo apt-get install hostapd dnsmasq`
+2. set wifi static IP: `sudo nano /etc/dhcpcd.conf`
+
+```
+interface wlan0
+    static ip_address=192.168.42.1/24
+```
+
+disable wpa_supplicant: `sudo nano /etc/network/interfaces`
+
+```
+...
+allow-hotplug wlan0
+iface wlan0 inet manual
+# wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+...
+```
+
+`sudo systemctl restart dhcpcd`
+
+3. create new config file `sudo nano /etc/hostapd/hostapd.conf`
+
+*copy and paste from ref #1* do change ssid/wpa_passphrase
+
+```
+interface=wlan0
+driver=nl80211
+ssid=WSU Weather Station (nickname)
+hw_mode=g
+
+ieee80211n=1
+wmm_enabled=1
+ht_capab=[HT40][SMPS-STATIC][SHORT-GI-20][DSSS_CCK-40]
+
+wpa=2
+wpa_key_mgmt=WPA-PSK
+wpa_passphrase=whateveryouusehere
+rsn_pairwise=CCMP
+```
+
+and set as default `sudo nano /etc/default/hostapd`:
+
+```diff
+-   DAEMON_CONF=""
++   DAEMON_CONF="/etc/hostapd/hostapd.conf"
+```
+
+Test using `sudo /usr/sbin/hostapd /etc/hostapd/hostapd.conf`
+
+> **To do:** enable AP isolation?
+
+4. configure dnsmasq `sudo nano /etc/dnsmasq.conf`
+
+* ~~enable `no-resolv` so no other DNS servers are involved~~
+* ~~set `address=/#/127.0.0.1` to redirect all traffic to local server~~
+* add `interface=wlan0` to only listen on wifi AP
+* serve IP addresses in same subnet as static IP for wlan0
+
+> If no-resolve is used, and all addresses are redirected, then local
+> users cannot access the internet via eth0. However, since we do have
+> iptables rules which capture all traffic, the captive portal effect
+> is still achieved.
+
+```
+...
+#no-resolv
+...
+#address=/#/127.0.0.1
+...
+interface=wlan0
+...
+dhcp-range=192.168.42.100,192.168.42.150,3h
+...
+```
+
+`sudo systemctl restart dnsmasq`
+
+> **To do:** serve local domain names?
+
+5. setup captive portal routing
+
+```
+sudo iptables -t nat -I PREROUTING -i wlan0 -j DNAT --to 10.1.1.1
+```
+
+This version routes *all* traffic, not just traffic to ports
+80 (http) & 443 (https). Since we don't want LAN subjects to get
+routed to external IPs, don't include POSTROUTING/MASQUERADE 
+commands.
+
+***AFTER*** setting up iptables rules, install the `iptables-persistent`
+package and choose "yes, save rules" during setup.
+
+
 #### RPi-Monitor Setup
 
 ***TODO***
