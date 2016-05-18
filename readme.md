@@ -378,11 +378,13 @@ service fails to start, you can get more information by calling
 
 #### Update clock using GPS
 
-Feed specific GPS sentences to the local NTP daemon so the clock
-is updated without a network connection.
+Update the local clock, in case network is not available, using the
+Recommended Minimum Coordinates sentence (GPRMC) from the GPS and
+the local Network Time Protocol daemon.
 
-Start by adding a psuedo-terminal which only receives the Recommended
-Minimum Coordinates sentence (GPRMC). 
+First, have *kplex* send the `GPRMC` sentence to a new psuedo-terminal
+(pty) named `/home/kplex/gps0`. We put the pty in the *kplex* user's
+home directory because of file permissions.
 
 ```
 $ sudo nano /etc/kplex.conf
@@ -392,78 +394,59 @@ $ sudo nano /etc/kplex.conf
 
 [pty]
 mode=master
-filename=/////////////////
+filename=/home/kplex/gps0
 direction=out
 ofilter=+GPRMC:-all
 
 ```
 
-Now create a FIFO for kplex to connect to...
+Update NTP settings to use local NMEA GPS on device `/dev/gps0`.
 
-```
-$ sudo mkfifo /dev/gps0
-```
+`iburst` will coax NTP to grab time immediately from this source
+instead of waiting for algorithmic agreement with several peers.
 
-And tell NTP to use that FIFO as a GPS source...
+`mode 1` indicates to only process `$GPRMC` sentences, and to expect
+the default baud rate of 4800 bps. The `prefer` directive gives some
+extra weight to the local GPS.
 
 ```
 $ sudo nano /etc/ntp.conf
 ```
 ```
 ...
-server 127.127.20.0 mode 1 prefer
+server 127.127.20.0 mode 1 iburst
 ...
 ```
 
-`mode 1` indicates to only process `$GPRMC` sentences, and to expect
-the default baud rate of 4800 bps. The `prefer` directive gives some
-extra weight to the local GPS.
+Finally, create udev rule linking pty created by *kplex* to
+device expected by *ntpd*. Create file with arbitrary numeric
+prefix in udev rules directory:
 
-scenario 1 (ntp 4.2.6p5)
-
-- create FIFO, assign ownership to `kplex`
-- kplex writes to file `/dev/gps0`
-- NTP uses `server 127.127.20.0`
-
--> results after restarting NTP (systemctl status)
-
-    ...
-    peers refreshed
-    Listening on routing socket on fd #23 for interface updates
-    refclock_setup fd 5 tcgetattr: Inappropriate ioctl for device
-
-Device not listed in output of `ntpq -p`
-
---> tried updating to v4.2.8p7... still no device listed by `ntpq -p`
-    and the error changed from `fd 5 tcgetattr` to `fd 4 tcgetattr`
+```
+$ sudo nano /etc/udev/rules.d/10-gps.rules
+```
+```
+KERNEL=="gps0", SUBSYSTEM
 
 
-scenario 2 (ntp 4.2.6p5)
+...Actually that isn't very straightforward:
 
-- kplex writes to pty `/home/kplex/gps0`
-- symlinked `/home/kplex/gps0` -> `/dev/gps0`
-- NTP uses `server 127.127.20.0`
+* tried `udevadm info --path=/home/kplex/gps0` to get attribs to
+  build rule around and got back "syspath not found"
+* couldn't determine what group kplex user should be added to in
+  order to have 'create new /dev entry' permissions
 
--> results after restarting NTP:
+Instead... cron?
 
-    ...
-    peers refreshed
-    Listening on routing socket on fd #23 for interface updates
-    refclock_setup fd 5 TIOCMGET: Invalid argument
-    GPS_NMEA(0) serial /dev/gps0 open at 4800 bps
+```
+$ sudo crontab -e
+```
+```
+@reboot ln -s /home/kplex/gps0 /dev/gps0
+```
 
-and from `ntpq -p`: 
+Works for me (for now).
 
-    remote           refid    st t when poll reach  delay   offset  jitter
-    GPS_NMEA(0)      .GPS.     0 l   33   64    0   0.000    0.000   0.000
-    ...
-
-
---> tried updating to 4.2.8p7... mixed results: still have "TIOCMGET"
-    error but with `fd 4` instead of `fd 5`, but DO now see entry in
-    `ntpq -p` with non-zero offset/jitter values... BUT GPS was marked as
-    false ticker (x)    ........... waiting, waiting, waiting..... OK,
-    after a few minutes local GPS gets selected (*)!
 
 
 #### Off button support
